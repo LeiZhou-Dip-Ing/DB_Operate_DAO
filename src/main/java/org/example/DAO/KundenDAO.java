@@ -1,7 +1,7 @@
 package org.example.DAO;
 
 import com.google.inject.Inject;
-import org.example.Config.IDatabaseConfig;
+import org.example.Config.UserConfig;
 import org.example.Connector.DatabaseType;
 import org.example.Connector.IDatabaseConnectorFactory;
 import org.example.Model.Kunde;
@@ -27,12 +27,12 @@ public class KundenDAO extends AbstractDAO implements IKundenDAO {
 
 
     @Inject
-    protected KundenDAO(IDatabaseConnectorFactory connectorFactory, IDatabaseConfig config) {
-        super(connectorFactory, config);
+    protected KundenDAO(IDatabaseConnectorFactory connectorFactory, UserConfig userConfig) {
+        super(connectorFactory, userConfig.getConfigFileName(), userConfig.getConfigType());
     }
 
     @Override
-    protected boolean doesTableExist(Connection connection, String tableName) throws SQLException {
+    protected boolean doesTableExist(Connection connection, String tableName) {
         String checkTableSQL = "SELECT * FROM " + tableName;
         try (Statement stmt = connection.createStatement()) {
             stmt.executeQuery(checkTableSQL);
@@ -41,7 +41,8 @@ public class KundenDAO extends AbstractDAO implements IKundenDAO {
             if (e.getSQLState().equals("42X05")) {  // 42X05: Table not found error in Derby
                 return false;
             }
-            throw e;
+            //other database
+            return false;
         }
     }
 

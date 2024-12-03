@@ -1,19 +1,26 @@
 package org.example.Connector;
 
+import com.google.inject.Inject;
+import org.example.Config.DatabaseConfigFactoryProvider;
 import org.example.Config.IDatabaseConfig;
+import org.example.Config.IDatabaseConfigFactory;
+
+import java.sql.SQLException;
 
 public class DynamicDatabaseConnectorFactory implements IDatabaseConnectorFactory{
+    private final IDatabaseConnector databaseConnector;
+
+    @Inject
+    public DynamicDatabaseConnectorFactory(IDatabaseConnector databaseConnector) {
+        this.databaseConnector = databaseConnector;
+    }
+
+
     @Override
-    public IDatabaseConnector createConnector(IDatabaseConfig config, DatabaseType dbType) {
-        switch (dbType) {
-            case DERBY:
-                return new DynamicDatabaseConnector(config); // Derby connector
-            case SQLSERVER:
-                return null; // SQL Server connector
-            case MYSQL:
-                return null; // MYSQL connector
-            default:
-                throw new IllegalArgumentException("Unsupported database type: " + dbType);
-        }
+    public IDatabaseConnector createConnector(DatabaseType dbType, String configFileName, String configType) {
+        IDatabaseConfigFactory configFactory = DatabaseConfigFactoryProvider.getFactory(configType);
+        IDatabaseConfig config = configFactory.createConfig(configFileName, dbType);
+        databaseConnector.configure(config);
+        return  databaseConnector;
     }
 }

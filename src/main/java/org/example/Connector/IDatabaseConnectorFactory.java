@@ -1,6 +1,7 @@
 package org.example.Connector;
 
-import org.example.Config.IDatabaseConfig;
+import java.sql.SQLException;
+
 public interface IDatabaseConnectorFactory {
-    IDatabaseConnector createConnector(IDatabaseConfig config,DatabaseType dbType);
+    IDatabaseConnector createConnector(DatabaseType dbType, String configFileName, String configType)throws SQLException, ClassNotFoundException ;
 }

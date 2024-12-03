@@ -1,6 +1,5 @@
 package org.example.DAO;
 
-import org.example.Config.IDatabaseConfig;
 import org.example.Connector.DatabaseType;
 import org.example.Connector.IDatabaseConnector;
 import org.example.Connector.IDatabaseConnectorFactory;
@@ -10,21 +9,26 @@ import java.sql.Statement;
 
 public abstract class AbstractDAO {
     private final IDatabaseConnectorFactory connectorFactory;
-    private final IDatabaseConfig config;
+    private final String configFileName;
+    private final String configType;
 
     // Constructor injection factories and configurations
-    protected AbstractDAO(IDatabaseConnectorFactory connectorFactory, IDatabaseConfig config) {
+    protected AbstractDAO(IDatabaseConnectorFactory connectorFactory, String configFileName, String configType) {
         this.connectorFactory = connectorFactory;
-        this.config = config;
+        this.configFileName = configFileName;
+        this.configType = configType;
     }
 
     // Methods for creating connections, using factories to create database connectors
     protected Connection getConnection(DatabaseType dbType) throws Exception {
-        IDatabaseConnector connector = connectorFactory.createConnector(config, dbType);
+        // Use the factory to create a connector
+        IDatabaseConnector connector = connectorFactory.createConnector(dbType, configFileName, configType);
         if (connector == null) {
-            throw new SQLException("Datenbanktyp " + dbType + " wird nicht unterstützt.");
+            throw new SQLException("Unsupported database type: " + dbType);
         }
-        return connector.getConnection();
+        Connection connection = connector.getConnection();
+        System.out.println("Database connection established: " + connection);
+        return connection;
     }
 
     // Initialize database tables, or create them if they don't exist
@@ -42,7 +46,6 @@ public abstract class AbstractDAO {
                 System.out.println(tableName + " table already exists.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Database table initialization failed", e);
         }
     }
