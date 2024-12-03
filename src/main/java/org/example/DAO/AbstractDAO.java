@@ -19,8 +19,11 @@ public abstract class AbstractDAO {
     }
 
     // Methods for creating connections, using factories to create database connectors
-    protected Connection getConnection(DatabaseType dbType) throws SQLException {
+    protected Connection getConnection(DatabaseType dbType) throws Exception {
         IDatabaseConnector connector = connectorFactory.createConnector(config, dbType);
+        if (connector == null) {
+            throw new SQLException("Datenbanktyp " + dbType + " wird nicht unterstützt.");
+        }
         return connector.getConnection();
     }
 
@@ -38,7 +41,7 @@ public abstract class AbstractDAO {
             } else {
                 System.out.println(tableName + " table already exists.");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Database table initialization failed", e);
         }

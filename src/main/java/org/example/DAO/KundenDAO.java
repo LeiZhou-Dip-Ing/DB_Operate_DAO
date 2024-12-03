@@ -58,7 +58,7 @@ public class KundenDAO extends AbstractDAO implements IKundenDAO {
             stmt.setString(5, kunde.getPlz());
             stmt.executeUpdate();
             System.out.println("Kunde gespeichert: " + kunde);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Fehler beim Speichern des Kunden", e);
         }
     }
@@ -75,7 +75,7 @@ public class KundenDAO extends AbstractDAO implements IKundenDAO {
             while (rs.next()) {
                 kundenList.add(mapToKunde(rs));
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Fehler beim Abrufen aller Kunden", e);
         }
 
@@ -94,7 +94,7 @@ public class KundenDAO extends AbstractDAO implements IKundenDAO {
             if (rs.next()) {
                 return mapToKunde(rs);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Fehler beim Abrufen des Kunden", e);
         }
         return null;
@@ -119,7 +119,7 @@ public class KundenDAO extends AbstractDAO implements IKundenDAO {
             } else {
                 System.out.println("Kein Kunde mit ID " + id + " gefunden.");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Fehler beim Löschen des Kunden", e);
         }
     }

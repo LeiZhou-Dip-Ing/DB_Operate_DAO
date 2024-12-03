@@ -5,15 +5,16 @@ import org.example.Connector.DatabaseType;
 import org.example.DAO.IKundenDAO;
 import org.example.GUI.Dialog.KundenDialog;
 import org.example.Model.Kunde;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class KundenGUI  extends JFrame {
-    private JTextField vornameField, nachnameField, adresseField, plzField,kundennummerField;
-    // inject IKundeDAO with IOC Guice
+public class KundenGUI extends JFrame {
+    private final JTextField vornameField, nachnameField, adresseField, plzField, kundennummerField;
     private final IKundenDAO kundeDAO;
+    private final JComboBox<DatabaseType> databaseTypeComboBox;
 
     @Inject
     public KundenGUI(IKundenDAO kundeDAO) {
@@ -21,49 +22,76 @@ public class KundenGUI  extends JFrame {
 
         setTitle("Kunden Management");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(7, 2, 10, 10));
+        setLayout(new BorderLayout(10, 10));
 
-        kundennummerField = createFieldWithLabel("Kundennummer:");
-        vornameField = createFieldWithLabel("Vorname:");
-        nachnameField = createFieldWithLabel("Nachname:");
-        adresseField = createFieldWithLabel("Adresse:");
-        plzField = createFieldWithLabel("PLZ:");
+        // Create a panel to hold the form fields (Group Box)
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new GridLayout(5, 2, 10, 10)); // Grid layout for form fields
+        formPanel.setBorder(BorderFactory.createTitledBorder("Kunden Informationen"));
 
-        // Create the button and bind the event
+        // Create the fields inside the form panel
+        kundennummerField = createFieldWithLabel(formPanel, "Kundennummer:");
+        vornameField = createFieldWithLabel(formPanel, "Vorname:");
+        nachnameField = createFieldWithLabel(formPanel, "Nachname:");
+        adresseField = createFieldWithLabel(formPanel, "Adresse:");
+        plzField = createFieldWithLabel(formPanel, "PLZ:");
+
+        // Create the combo box for selecting database type
+        databaseTypeComboBox = new JComboBox<>(DatabaseType.values());
+        databaseTypeComboBox.setSelectedItem(DatabaseType.DERBY);  // Set DERBY as the default selection
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));  // Panel for ComboBox
+        topPanel.add(new JLabel("Datenbanktyp:"));
+        topPanel.add(databaseTypeComboBox);
+
+        // Create buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton saveButton = new JButton("Speichern");
+        JButton showAllButton = new JButton("Anzeigen");
+        JButton Aktualisieren = new JButton("Aktualisieren");
+        buttonPanel.add(saveButton);
+        buttonPanel.add(showAllButton);
+        buttonPanel.add(Aktualisieren);
 
-        JButton showAllButton = new JButton("Alle Kunden anzeigen");
+        // Add panels to the frame
+        add(topPanel, BorderLayout.NORTH);  // ComboBox at the top
+        add(formPanel, BorderLayout.CENTER);  // Form fields in the center
+        add(buttonPanel, BorderLayout.SOUTH); // Buttons at the bottom
 
-        add(new JLabel()); // Empty label to occupy space
-        add(saveButton);
-
-        add(new JLabel()); // Empty label to occupy space
-        add(showAllButton);
-
-        saveButton.addActionListener(new SaveButtonListener()); //add button event listener
+        // Event listeners
+        saveButton.addActionListener(new SaveButtonListener());
+        Aktualisieren.addActionListener(new AktualisierenButtonListener());
         showAllButton.addActionListener(e -> showAllKundenDialog());
 
+        // Final UI setup
         pack();
-        setLocationRelativeTo(null);// Window centering
+        setLocationRelativeTo(null); // Center the window
         setVisible(true);
+    }
+
+    private JTextField createFieldWithLabel(JPanel panel, String labelText) {
+        JLabel label = new JLabel(labelText);
+        JTextField textField = new JTextField();
+        panel.add(label);
+        panel.add(textField);
+        return textField;
     }
 
     // Show All Kunden Dialog
     private void showAllKundenDialog() {
-        // Create a new dialog and display it
-        KundenDialog kundenDialog = new KundenDialog(this, kundeDAO);
-        kundenDialog.setVisible(true);  // Display the dialog
+        KundenDialog kundenDialog = new KundenDialog(this, kundeDAO,(DatabaseType) databaseTypeComboBox.getSelectedItem());
+        kundenDialog.setVisible(true);
     }
 
-    // Tool method: create labeled fields
-    private JTextField createFieldWithLabel(String labelText) {
-        JLabel label = new JLabel(labelText);
-        JTextField textField = new JTextField();
-        add(label);
-        add(textField);
-        return textField;
+    // Aktualisieren button listener
+    private static class AktualisierenButtonListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+        }
     }
 
+    // Save button listener
     private class SaveButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -81,7 +109,6 @@ public class KundenGUI  extends JFrame {
         }
     }
 
-    // Methods for saving data to the database (via DAO)
     private void saveData() {
         String kundennummerText = kundennummerField.getText().trim();
         String vorname = vornameField.getText().trim();
@@ -89,7 +116,7 @@ public class KundenGUI  extends JFrame {
         String adresse = adresseField.getText().trim();
         String plz = plzField.getText().trim();
 
-        //validate input
+        // Validate input
         if (kundennummerText.isEmpty() || vorname.isEmpty() || nachname.isEmpty() || adresse.isEmpty() || plz.isEmpty()) {
             throw new IllegalArgumentException("Alle Felder müssen ausgefüllt sein!");
         }
@@ -102,17 +129,17 @@ public class KundenGUI  extends JFrame {
             throw new IllegalArgumentException("Kundennummer muss eine gültige Zahl sein!");
         }
 
-        // save date with DAO
+        // Save the data with DAO
         Kunde kunde = new Kunde();
-        kunde.setKundennummer(kundennummer);  // Set the Kundennummer
+        kunde.setKundennummer(kundennummer);
         kunde.setVorname(vorname);
         kunde.setNachname(nachname);
         kunde.setAdresse(adresse);
         kunde.setPlz(plz);
-        kundeDAO.save(kunde, DatabaseType.DERBY);
+        kundeDAO.save(kunde, (DatabaseType) databaseTypeComboBox.getSelectedItem());
     }
 
-    // Clear the input fields
+    // Clear input fields
     private void clearFields() {
         kundennummerField.setText("");
         vornameField.setText("");
@@ -121,4 +148,3 @@ public class KundenGUI  extends JFrame {
         plzField.setText("");
     }
 }
-
