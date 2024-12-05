@@ -2,6 +2,7 @@ package org.example.DAO;
 
 import org.example.Connector.DatabaseType;
 import org.example.Model.Kunde;
+
 import java.util.List;
 
 public interface IKundenDAO {

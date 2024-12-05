@@ -3,6 +3,7 @@ package org.example;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.example.GUI.KundenGUI;
+import org.example.GUI.KundenManagerGUI;
 import org.example.utils.IOCFramework;
 import javax.swing.*;
 
@@ -16,8 +17,13 @@ public class App
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                //  Injecting KundenGUI
-                KundenGUI kundenGUI = injector.getInstance(KundenGUI.class);
+                // make it aktive to test demo in java-tpl-5
+                //KundenGUI kundenGUI = injector.getInstance(KundenGUI.class);
+                //kundenGUI.setVisible(true);
+
+                // make it aktive to test demo in java-tpl-6
+                KundenManagerGUI kundenManagerGUI = injector.getInstance(KundenManagerGUI.class);
+                kundenManagerGUI.setVisible(true);
             }
         });
     }

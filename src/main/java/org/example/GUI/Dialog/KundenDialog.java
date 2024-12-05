@@ -3,6 +3,7 @@ package org.example.GUI.Dialog;
 import org.example.Connector.DatabaseType;
 import org.example.DAO.IKundenDAO;
 import org.example.Model.Kunde;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -10,13 +11,16 @@ import java.util.List;
 public class KundenDialog extends JDialog {
     private final IKundenDAO kundenDAO;
     private final DatabaseType databaseType;
+
     public KundenDialog(Frame parent, IKundenDAO kundeDAO, DatabaseType databaseType) {
         super(parent, "Alle Kunden", true); // true makes it modal (blocks interaction with other windows)
         this.kundenDAO = kundeDAO;
         this.databaseType = databaseType;
+
         // Set up dialog window size and layout
         setSize(600, 400);
         setLocationRelativeTo(parent);  // Center the dialog relative to parent window
+
         // Create components to show customers' data
         displayAllKunden();
     }
@@ -50,7 +54,7 @@ public class KundenDialog extends JDialog {
             // Prepare a string to display all customers
             StringBuilder displayText = new StringBuilder();
             for (Kunde kunde : allKunden) {
-                displayText.append("Kundennummer: ").append(kunde.getKundennummer()).append("\n")
+                displayText.append("KundenID: ").append(kunde.getKundenID()).append("\n") // KundenID auto-generated
                         .append("Vorname: ").append(kunde.getVorname()).append("\n")
                         .append("Nachname: ").append(kunde.getNachname()).append("\n")
                         .append("Adresse: ").append(kunde.getAdresse()).append("\n")

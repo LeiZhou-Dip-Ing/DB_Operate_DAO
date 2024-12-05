@@ -1,28 +1,30 @@
 package org.example.Model;
 
 public class Kunde {
-    private int kundennummer;
+    private int kundenID;  // Autoincrement in database
     private String vorname;
     private String nachname;
     private String adresse;
     private String plz;
+    private String ort;
 
     public Kunde() {}
 
-    public Kunde(int kundennummer, String vorname, String nachname, String adresse, String plz) {
-        this.kundennummer = kundennummer;
+    public Kunde(int kundenID, String vorname, String nachname, String adresse, String plz, String ort) {
+        this.kundenID = kundenID;
         this.vorname = vorname;
         this.nachname = nachname;
         this.adresse = adresse;
         this.plz = plz;
+        this.ort = ort;
     }
 
-    public int getKundennummer() {
-        return kundennummer;
+    public int getKundenID() {
+        return kundenID;
     }
 
-    public void setKundennummer(int kundennummer) {
-        this.kundennummer = kundennummer;
+    public void setKundenID(int kundenID) {
+        this.kundenID = kundenID;
     }
 
     public String getVorname() {
@@ -56,5 +58,17 @@ public class Kunde {
     public void setPlz(String plz) {
         this.plz = plz;
     }
-}
 
+    public String getOrt() {
+        return ort;
+    }
+
+    public void setOrt(String ort) {
+        this.ort = ort;
+    }
+
+    @Override
+    public String toString() {
+        return vorname + " " + nachname;
+    }
+}

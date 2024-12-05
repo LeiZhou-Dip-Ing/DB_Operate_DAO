@@ -11,4 +11,3 @@ public interface IDatabaseConnector {
     void configure(IDatabaseConfig config);
 }
 
-

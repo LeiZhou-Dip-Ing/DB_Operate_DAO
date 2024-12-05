@@ -2,10 +2,7 @@ package org.example.utils;
 
 import com.google.inject.AbstractModule;
 import org.example.Config.UserConfig;
-import org.example.Connector.DynamicDatabaseConnector;
-import org.example.Connector.DynamicDatabaseConnectorFactory;
-import org.example.Connector.IDatabaseConnector;
-import org.example.Connector.IDatabaseConnectorFactory;
+import org.example.Connector.*;
 import org.example.DAO.IKundenDAO;
 import org.example.DAO.KundenDAO;
 
